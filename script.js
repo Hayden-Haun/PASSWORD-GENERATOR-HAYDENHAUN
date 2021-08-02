@@ -7,32 +7,44 @@ var generateBtn = document.querySelector("#generate");
 var specialChars = "!#$%&()*+,-./:;<=?@[]^_{|}~".split("");
 var lowerCase = "abcdefghijklmnopqrstuvwxyz".split("");
 var upperCase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-var numberChars = "0123456789".split("");
+var numberCharacters = "0123456789".split("");
 var userChoiceArray;
+var didUserSelect;
 
 var passwordCharCount;
 var booSpecial;
 var booLower;
 var booUpper;
+var booNumbers;
 
 // Write password to the #password input
 function writePassword(event) {
   event.preventDefault(); //make sure that the page does not refresh when button is clicked
+  userChoiceArray = [];
+
   var password = generatePassword();
   var passwordText = document.querySelector("#password");
 
   passwordText.value = password;
 }
 
+//MAIN FUNCTION. IF STATEMENT MAKES SURE THAT USER SELECTS AT LEAST ONE OPTION
 function generatePassword() {
+  didUserSelect = false;
   passwordCharCount = getLength();
   booSpecial = getSpecial();
   booLower = getLower();
   booUpper = getUpper();
+  booNumbers = getNumber();
 
-  var result = mainCreateFunction();
-
-  return result;
+  if (didUserSelect) {
+    var result = mainCreateFunction();
+    return result;
+  } else {
+    alert(
+      "NO OPTION SELECTED. PLEASE PRESS BUTTON AGAIN AND CHOOSE AT LEAST ONCE OPTION"
+    );
+  }
 }
 
 //DECLARE FUNCTION TO GET LENGTH OF PASSWORD. IF/ELSE STATEMENT TO MAKE SURE LENGTH MEETS REQUIREMENTS
@@ -54,75 +66,73 @@ function getLength() {
   return numberChars;
 }
 
+//USER SELECTS WHETHER THEY WANT SPECIAL CHARS OR NOT
 function getSpecial() {
   var specialSelection = confirm(
     "Do you want SPECIAL CHARACTERS in your password?"
   );
+  if (specialSelection) {
+    didUserSelect = true;
+  }
   return specialSelection;
 }
 
+//USER SELECTS WHETHER THEY WANT LOWER CHARS OR NOT
 function getLower() {
   var lowerSelection = confirm(
     "Do you want LOWER-CASE LETTERS in your password?"
   );
+  if (lowerSelection) {
+    didUserSelect = true;
+  }
   return lowerSelection;
 }
 
+//USER SELECTS WHETHER THEY WANT UPPER CHARS OR NOT
 function getUpper() {
   var upperSelection = confirm(
     "Do you want UPPER-CASE LETTERS in your password?"
   );
+  if (upperSelection) {
+    didUserSelect = true;
+  }
   return upperSelection;
 }
 
+//USER SELECTS WHETHER THEY WANT NUMBERS OR NOT
+function getNumber() {
+  var numberSelection = confirm("Do you want NUMBERS in your password?");
+  if (numberSelection) {
+    didUserSelect = true;
+  }
+  return numberSelection;
+}
+
+//FUNCTION CREATES AN ARRAY BASED ON USER SELECTIONS OF ALL VALID CHARACTERS TO ADD TO PASSWORD
+//FOR LOOP ITERATES THROUGH BASED ON THE USER SELECTED PASSWORD LENGTH, AND ADDS CHARACTERS AT RANDOM TO PASSWORD.
 function mainCreateFunction() {
-  //--- USER SELECTED YES OR NO TO ALL 3 ---
-
-  //IF USER SELECTED NO FOR ALL QUESTIONS
-  if (!booSpecial && !booLower && !booUpper) {
-    userChoiceArray = numberChars;
+  if (booNumbers) {
+    userChoiceArray = userChoiceArray.concat(numberCharacters);
   }
 
-  //IF USER SELECTED YES FOR ALL QUESTIONS
-  if (booSpecial && booLower && booUpper) {
-    userChoiceArray = numberChars.concat(specialChars, lowerCase, upperCase);
+  if (booSpecial) {
+    userChoiceArray = userChoiceArray.concat(specialChars);
   }
 
-  //--- USER SELECTED NO TO 1 ONLY ---
-
-  //IF USER SELECTED NO TO SPECIAL ONLY
-  if (!booSpecial && booLower && booUpper) {
-    userChoiceArray = numberChars.concat(lowerCase, upperCase);
+  if (booLower) {
+    userChoiceArray = userChoiceArray.concat(lowerCase);
   }
 
-  // IF USER SELECTED NO TO LOWER ONLY
-  if (booSpecial && !booLower && booUpper) {
-    userChoiceArray = numberChars.concat(specialChars, upperCase);
+  if (booUpper) {
+    userChoiceArray = userChoiceArray.concat(upperCase);
   }
 
-  // IF USER SELECTED NO TO UPPER ONLY
-  if (booSpecial && booLower && !booUpper) {
-    userChoiceArray = numberChars.concat(specialChars, lowerCase);
-  }
-
-  //--- USER SELECTED YES TO 1 ONLY --
-  if (!booSpecial && !booLower && booUpper) {
-    userChoiceArray = numberChars.concat(upperCase);
-  }
-
-  if (!booSpecial && booLower && !booUpper) {
-    userChoiceArray = numberChars.concat(lowerCase);
-  }
-
-  if (booSpecial && !booLower && !booUpper) {
-    userChoiceArray = numberChars.concat(specialChars);
-  }
   //DECLARE LOCAL VARIABLE PASSWORD
   var passwordGen = "";
   for (var i = 0; i < passwordCharCount; i++) {
     var randomChar = Math.floor(Math.random() * userChoiceArray.length);
     passwordGen += userChoiceArray[randomChar];
-    console.log(passwordGen);
+    //console.log(passwordGen);
   }
   return passwordGen;
 }
